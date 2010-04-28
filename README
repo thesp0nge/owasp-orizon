@@ -1,0 +1,123 @@
+README file for Orizon v1.30 - 20091127
+=======================================
+
+. DESCRIPTION
+Orizon is an engine based source code static analysis engine. It can be run 
+standalone or it can be used to create a proper SAST tool.
+
+. FEATURES
+
+	Feature         | Status
+	================|========================================================
+	code crawling   | working
+	----------------|--------------------------------------------------------
+	static analysis | not working
+	----------------|--------------------------------------------------------
+	report          | partial (missing html and xml output support)
+	-------------------------------------------------------------------------
+	
+. QUICK START
+	* launch bin/orizon.sh and Orizon SHell (osh) will appear
+		e.g.: $ bin/orizon.sh
+	* issue the open command to tell orizon the directory containing the 
+	source files to scan
+		e.g.: (osh) $ open /Users/thesp0nge/src/orizon_test_cases/Java/small
+	* issue the model command to tell orizon to parse the files and to create 
+	a model of them
+		e.g.: (osh) $ model
+	* issue the crawl command to perform source code crawling
+		e.g.: (osh) $ crawl
+	* maybe you want to save the report in a text file for further reading
+		e.g.: (osh) $ set report_format txt 
+	* issue the report command to view results
+		e.g.: (osh) $ report
+	* if you feel yourself in trouble just use help or suggest commands to 
+	have some hints or some help from the tool.
+		
+	By now, orizon will display findings using standard output and write them 
+	in a text file called orizon_report.txt. This behavior will change in 
+	later releases.
+	
+. SUPPORTED PROGRAMMING LANGUAGES
+	
+	 Language   | Status    | Parser's      | Information retrieved
+	            |           | reliability   | from parser
+	============|===========|===============|================================
+	    Java    |   ***     | 90-95%        | identifiers, fields scope
+	    JSP     |   *       | 60-70%        | none yet
+	    PHP     |   **      | 40-50%        | identifiers
+	    C       |   *       | 5%            | identifiers
+	
+	Legenda
+		*: language support has been started. The parser is here but the 
+		language grammar needs further improvements. 
+		**: language support is in alpha stage. Parser performs well but
+		grammar needs further little improvements
+		***: language support is in beta stage. Parser performs well and
+		effort needs to be spent in language information collector
+		****: language support is in a release candidate stage. Parser 
+		and collector are almost complete. orizon is able to build a 
+		complete application model from the information retrieved
+		*****: language support is complete. 
+
+. DEPENDENCIES
+	orizon will run with JDK 1.4 and above. It relies upon log4j and jline 
+	packages that are provided in the lib/ directory.
+
+. GET THE SOURCES
+	* download the latest Orizon version from subversion trunk
+	# Project members authenticate over HTTPS to allow committing changes.
+		svn checkout https://owasp-orizon.googlecode.com/svn/trunk/ owasp-orizon --username "your_username"
+	When prompted, enter your generated googlecode.com password
+	# Non-members may check out a read-only working copy anonymously over HTTP.
+		svn checkout http://owasp-orizon.googlecode.com/svn/trunk/ owasp-orizon-read-only 
+	* a directory called owasp-orizon will be created, go there:
+		cd owasp-orizon/
+	(please note that the directory will be called owasp-orizon-read-only if you accessed the sources using HTTP)
+	
+	* move where the sources are
+		cd owasp-orizon/ (it's not a typo!)
+	
+	* launch ant and compile it
+		maven
+	* Jars will be created in owasp-orizon/dist/lib
+		ls -l dist/lib
+	* Enjoy!
+
+. AVAILABLE COMMANDS
+	* open directory_name: opens directory_name for scanning.
+	* model: creates an application model from the opened directory.
+	* stat: prints out some statistics coming from orizon engines
+	* crawl: performs a code crawling
+	* set option [value]: sets the option telling orizon how to behave
+	 	valid option are:
+			+ mirage [trace|notrace]: trace and notrace to put the engine in 
+			trace or in no trace mode.
+			+ quiet: says orizon to run quietly
+			+ store_output: says orizon not to use standard output to 
+			print informations (valuable only for development team)
+			+ orl_root directory: specifies an alternative root for security 
+			library overriding lib/orizon-library-1.19.jar
+			+ report_format [txt|html|xml|console]: specifies the output 
+			format. Using console, output onto disk 
+			will be disabled.
+			+ report_name filename: write report in filename, stored in the 
+			directory you launch osh from.
+	* report: prints out the findings report
+	* version: prints the version number
+	* info: prints the version number and the available engines signature
+
+. PUT ENGINES IN TRACE MODE
+At the osh command prompt, enter the command set trace. Trace files will be created in the 
+directory you launched osh.
+Traces are text files containing a lot of debug infos, so be careful in putting engines in 
+trace mode.
+
+. CONTACTS
+	Please submit bugs, comments, requests form improvements, requests for new
+	features and requests to thesp0nge@owasp.org specifying:
+		* your system configuration
+		* engine traces (at least mirage engine trace)
+		* the orizon version
+		* how to reproduce the bug
+		* eventually attaching the source file generating the exception

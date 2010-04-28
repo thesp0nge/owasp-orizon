@@ -1,0 +1,7 @@
+.classpath
+.project
+dist/
+*.class
+*~
+*.jar
+*.tar.gz

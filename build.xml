@@ -1,0 +1,407 @@
+<project name="orizon" default="dist" basedir=".">
+<description>
+	Orizon Main Ant build.xml
+</description>
+	
+<!-- set global properties for this build -->
+<property name="orizon_major" value="1"/>
+<property name="orizon_minor" value="39"/>
+<property name="orizon_release" value="0"/>
+<property name="orizon_codename" value="mint"/>
+
+<property name="version" value="${orizon_major}.${orizon_minor}"/> <!--${orizon_release}"/>-->
+<property name="src" location="src/"/>
+<property name="build" location="build"/>
+<property name="dist"  location="dist"/>
+<property name="etc" location="lib" />
+<property name="include" location="${user.home}/lib"/>
+<property name="doc" location="doc"/>
+<property name="conf" location="conf/"/>
+	
+<buildnumber file="build.num"/>
+
+<target name="mirage">
+	<propertyfile file="mirage.num">
+		<entry key="mirage.build" type="int" operation="+" default="0"/>
+	</propertyfile> 
+	<!-- <ant target="rebuild" antfile="src/org/owasp/orizon/mirage/build.xml" /> -->
+</target>
+<!--
+<target name="dusk">
+	<propertyfile file="dusk.num">
+		<entry key="dusk.build" type="int" operation="+" default="0"/>
+	</propertyfile>
+	<ant target="rebuild" antfile="src/org/owasp/orizon/dusk/build.xml" />
+</target>
+<target name="osh">
+	<propertyfile file="osh.num">
+		<entry key="osh.build" type="int" operation="+" default="0"/>
+	</propertyfile>
+	<ant target="rebuild" antfile="src/org/owasp/orizon/tools/osh/build.xml" />
+</target>
+<target name="twilight">
+	<propertyfile file="twilight.num">
+		<entry key="twilight.build" type="int" operation="+" default="0"/>
+	</propertyfile>
+	<ant target="rebuild" antfile="src/org/owasp/orizon/twilight/build.xml" />
+</target>
+<target name="library">
+	<propertyfile file="library.num">
+		<entry key="library.build" type="int" operation="+" default="0"/>
+	</propertyfile>
+	
+	<ant target="rebuild" antfile="src/org/owasp/orizon/library/build.xml" />
+</target>
+<target name="language-packs">
+	<ant target="language-packs" antfile="src/org/owasp/orizon/mirage/build.xml" />
+</target>
+
+<target name="tornado">
+	<propertyfile file="tornado.num">
+		<entry key="tornado.num.build" type="int" operation="+" default="0"/>
+	</propertyfile>
+		
+	<ant target="rebuild" antfile="src/org/owasp/orizon/tornado/build.xml" />
+</target>
+-->
+
+<target name="init">
+	<property file="orizon.properties"/>
+	<!-- Create the time stamp -->
+	<tstamp/>
+	<!-- Create the build directory structure used by compile -->
+	<mkdir dir="${build}"/>
+</target>
+
+<target
+	name="compile" 
+	depends="init, mirage" 
+	description="Compile the source code" >
+	 
+	<!-- Compile the java code from ${src} into ${build} -->
+	<javac debug="on" srcdir="${src}" destdir="${build}">
+		<classpath>
+	    	<!-- use the value of the ${classpath} property in the classpath -->
+	       	<pathelement path="${classpath}"/>
+	    	<!-- include all jar files  -->
+	       	<fileset dir="${include}">
+	           	<include name="**/*.jar"/>
+	       	</fileset>
+	  	</classpath>
+	</javac>
+</target>
+
+<target name="javadoc" depends="clean, compile" >
+	<mkdir dir="${build}/doc" />
+	<javadoc sourcepath="${src}" destdir="${build}/doc" packagenames="*" stylesheetfile="./style.css"/> 
+</target>
+
+<target name="about" depends="clean" description="create about">
+	<property file="mirage.num"/>
+	<property file="dusk.num"/>
+	<property file="twilight.num"/>
+	<property file="library.num"/>
+	<property file="osh.num"/>
+	<property file="tornado.num"/>
+	
+	<delete file="${src}/org/owasp/orizon/core/About.java"/>
+		<echo file="${src}/org/owasp/orizon/core/About.java">
+			/*
+			 * This file is generated automatically by Owasp Orizon ant build.xml file
+			 * 
+			 */ 
+			package org.owasp.orizon.core;
+			public class About {
+				public static final int ORIZON_MAJOR = ${orizon_major};
+				public static final int ORIZON_MINOR = ${orizon_minor};
+				public static final String ORIZON_RELEASE = "${orizon_release}";
+				public static final String ORIZON_BUILD = "${build.number}";
+			    public static final String MIRAGE_BUILD = "${mirage.build}";
+				public static final String DUSK_BUILD = "${dusk.build}";
+				public static final String TWILIGHT_BUILD = "${twilight.build}";
+				public static final String OSH_BUILD = "${osh.build}";
+				public static final String LIBRARY_BUILD = "${library.build}";
+				public static final String TORNADO_BUILD = "${tornado.build}";
+			
+				public static final String ORIZON_CODENAME = "${orizon_codename}";
+			    public static final String ORIZON_JAR_NAME = "orizon-${orizon_major}.${orizon_minor}${orizon_release}.jar";
+			
+				public About() {
+				}
+				public final static String shortVersion() {
+					return new String("v"+ORIZON_MAJOR+"."+ORIZON_MINOR);
+				}
+				public final static String build() {
+					return new String("[build: " + ORIZON_BUILD + "]");
+				}
+				public final static String version() {
+					if ("".equals(ORIZON_RELEASE)) 
+						return new String("v"+ORIZON_MAJOR+"."+ORIZON_MINOR);
+					return new String("v"+ORIZON_MAJOR+"."+ORIZON_MINOR+"."+ORIZON_RELEASE);
+				}
+				public final static String about() {
+					return new String("Orizon " + version() + " ("+ORIZON_CODENAME+") [build: " +ORIZON_BUILD +"] (C) 2006-2010 thesp0nge@owasp.org ");
+				}
+			}
+		</echo>
+</target>
+	
+<!-- Build Owasp Orizon Jar file -->
+<target 
+	name="build" 
+	depends="clean, about, compile, javadoc" 
+	description="generate Owasp Orizon JAR file"
+>
+	
+	<mkdir dir="${dist}/lib"/>
+	<mkdir dir="${build}/lib" />
+	<!--  	
+	<copy file="${etc}\orizon_log4j.props" todir="${build}/lib"/>
+	<copy file="${etc}\owasp_orizon.jpg" todir="${build}/lib"/>
+	
+	<copy todir="${build}/library">
+	   	<fileset dir="library"/>
+	</copy>
+	-->
+	<property name="version.num" value="${version}"/>
+	
+	<tstamp>
+		<format property="TODAY" pattern="yyyy-MM-dd hh:mm:ss" />
+	</tstamp>
+	<tstamp>
+		<format property="T" pattern="yyyyMMdd" />
+	</tstamp>
+
+	<!-- Owasp Orizon Library Jar 
+	<delete file="MANIFEST.MF" />
+		
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Class-Path" value="./log4j.jar ./jline.jar ./orizon-core-${version.num}.jar" />
+		<attribute name="Main-Class" value="org.owasp.orizon.library.Library"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-library-${version.num}.jar" 
+		basedir="${build}" 
+		includes="org/owasp/orizon/library/**, 
+					library/**" 
+		excludes="org/owasp/orizon/core/**, 
+					org/owasp/bastion/**, 
+					org/owasp/orizon/crawler/**, 
+					org/owasp/orizon/csharp/**, 
+					org/owasp/orizon/dawn/**,
+					org/owasp/orizon/test/**"
+		manifest="MANIFEST.MF"
+		/>
+	-->
+	
+	
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Class-Path" value="./log4j-1.2.15.jar ./orizon-mirage-java-${version.num}.jar
+						./orizon-mirage-jsp-${version.num}.jar"/>
+		<attribute name="Main-Class" value="org.owasp.orizon.tools.osh.Osh"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-core-${version.num}.jar" 
+		basedir="${build}" 
+		excludes="org/owasp/orizon/mirage/java/**,
+			org/owasp/orizon/mirage/jsp/**,
+			org/owasp/orizon/tools/**,
+			doc/**" 
+		manifest="MANIFEST.MF"
+	/> 
+	<!-- Owasp Orizon language pack Jars -->
+	
+	<!-- JAVA -->
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-mirage-java-${version.num}.jar" 
+		basedir="${build}" 
+		includes="org/owasp/orizon/mirage/java/**"	
+		manifest="MANIFEST.MF"
+	/> 
+	<!-- C 
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-mirage-c-${version.num}.jar" 
+		basedir="${build}"
+		includes="org/owasp/orizon/mirage/c/**"
+		manifest="MANIFEST.MF"
+	/>
+	-->
+	<!-- PHP 
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-mirage-php-${version.num}.jar" 
+		basedir="${build}"
+		includes="org/owasp/orizon/mirage/php/**"
+		manifest="MANIFEST.MF"
+	/>
+	-->
+	<!-- JSP -->
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-mirage-jsp-${version.num}.jar" 
+		basedir="${build}"
+		includes="org/owasp/orizon/mirage/jsp/**"
+		manifest="MANIFEST.MF"
+	/>
+	<!-- Owasp Orizon test Jar -->
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Class-Path" value="./orizon-core-${version.num}.jar" />
+		<attribute name="Main-Class" value="org.owasp.orizon.test.mirage.J2EEAppTest"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-test-${version.num}.jar" 
+		basedir="${build}" 
+		includes="org/owasp/orizon/test/**" 
+		excludes="org/owasp/orizon/core/**, 
+			org/owasp/bastion/**, 
+			org/owasp/orizon/crawler/**, 
+			org/owasp/orizon/csharp/**, 
+			org/owasp/orizon/dawn/**,
+			org/owasp/orizon/library/**, 
+			library/**"
+		manifest="MANIFEST.MF"
+	/>
+	
+	<!-- Owasp Tools Jar --> 
+	<delete file="MANIFEST.MF" />
+			
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Class-Path" value="./log4j-1.2.15.jar ./orizon-core-${version.num}.jar" />
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-tools-${version.num}.jar" 
+		basedir="${build}" 
+		includes="org/owasp/orizon/tools/**" 
+		manifest="MANIFEST.MF"
+	/>
+	<!-- Owasp Orizon UI Jar 
+	<delete file="MANIFEST.MF" />
+		
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Class-Path" value="./log4j.jar ./jline.jar ./swt.jar ./orizon-library-${version.num}.jar ./orizon-core-${version.num}.jar" />
+		<attribute name="Main-Class" value="org.owasp.orizon.ui.Milk"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-ui-${version.num}.jar" 
+		basedir="${build}" 
+		includes="org/owasp/orizon/ui/**" 
+		excludes="library/**"
+		manifest="MANIFEST.MF"
+	/>
+	-->
+	<!-- Owasp Orizon Tornado Jar 
+	<delete file="MANIFEST.MF" />
+			
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Class-Path" value="./log4j.jar ./jline.jar ./orizon-core-${version.num}.jar" />
+		<attribute name="Main-Class" value="org.owasp.orizon.tornado.Tornado"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-tornado-${version.num}.jar" 
+		basedir="${build}" 
+		includes="org/owasp/orizon/tornado/**" 
+		manifest="MANIFEST.MF"
+	/>
+	-->
+	<!-- Owasp Orizon Doc Jar -->
+	<delete file="MANIFEST.MF" />
+	<manifest file="MANIFEST.MF">
+		<attribute name="Built-By" value="${user.name}"/>
+		<attribute name="Implementation-Version" value="${version.num}-b${build.number}"/>
+		<attribute name="Built-Date" value="${TODAY}"/>
+	</manifest>
+	<jar jarfile="${dist}/lib/orizon-doc-${version.num}.jar" 
+		basedir="${build}" 
+		includes="doc/**" 
+		manifest="MANIFEST.MF"
+	/>
+	
+	<delete file="MANIFEST.MF" />
+</target>
+
+<target name="dist" depends="build" description="generate the distribution" >
+	<property name="tmpdir" value="${dist}/orizon-${version.num}"/>
+	<mkdir dir="${tmpdir}" />
+	<mkdir dir="${tmpdir}/bin" />
+	<mkdir dir="${tmpdir}/conf" />
+	<mkdir dir="${tmpdir}/lib" />
+	<copy file="AUTHORS" todir="${tmpdir}" />
+	<copy file="COPYING" todir="${tmpdir}" />
+	<copy file="DEPENDENCIES" todir="${tmpdir}" />
+	<copy file="ISSUES" todir="${tmpdir}" />
+	<copy file="README" todir="${tmpdir}" />
+	<copy file="VERSION" todir="${tmpdir}" />
+	<copy file="Changelog" todir="${tmpdir}" />
+		
+	<copy file="scripts/orizon.sh" todir="${tmpdir}/bin" />
+	<copy file="scripts/lstools.sh" todir="${tmpdir}/bin" />
+	<chmod file="${tmpdir}/bin/orizon.sh" perm="755"/>
+	<chmod file="${tmpdir}/bin/lstools.sh" perm="755"/>
+	<copy file="scripts/orizon.bat" todir="${tmpdir}/bin" />
+	
+	<copy file="${include}/log4j-1.2.15.jar" todir="${tmpdir}/lib" />
+	<copy file="conf/log4j.conf" todir="${tmpdir}/conf" />
+	
+	<copy todir="${tmpdir}/lib" >
+		<fileset dir="${dist}/lib">
+			<include name="**/*.jar"/>
+		</fileset>
+	</copy>
+	
+	<tar destfile="${build}/orizon-${version.num}.tar.gz" 
+		compression="gzip">
+		<tarfileset prefix="orizon-${version.num}/bin"
+			dir ="${tmpdir}/bin" 
+			mode="755"
+		>
+			<include name="**/*.sh"/>
+		</tarfileset>
+		
+		<tarfileset  prefix="orizon-${version.num}"
+		    dir = "${tmpdir}"
+			preserveLeadingSlashes="true">
+			<exclude name="bin/*" />
+		</tarfileset>
+		
+	</tar>
+					
+</target>
+
+<target name="clean" description="clean up" >
+	<!-- Delete the ${build} and ${dist} directory trees -->
+	<delete dir="${build}"/>
+	<delete dir="${dist}"/>
+</target>
+</project>
