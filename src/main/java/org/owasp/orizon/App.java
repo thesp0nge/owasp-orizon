@@ -13,6 +13,7 @@ import org.apache.bcel.*;
 /**
  * Hello world!
  *
+ * java -Dlog4j.configurationFile=./log4j2.xml -jar target/owasp-orizon-1.0-SNAPSHOT.jar
  */
 public class App 
 {
