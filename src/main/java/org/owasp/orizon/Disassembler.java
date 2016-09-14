@@ -1,22 +1,15 @@
 package org.owasp.orizon;
 
-
 import java.io.IOException;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import org.apache.bcel.*;
+
 /**
- * Hello world!
- *
+ * TODO: Please write DisassemblerTest jUnit test case
+ * TODO: Add log4j calls
  */
-public class App 
-{
-  public static void main( String[] args )
-  {
-    Orizon o=new Orizon();
-    System.out.println(o.getVersion());
-    disassemble(args[0]);
-  }
+public class Disassembler {
 
   public static boolean disassemble(String name) {
     JavaClass mod = null;
@@ -41,6 +34,4 @@ public class App
 
     return true;
   }
-
-
 }
