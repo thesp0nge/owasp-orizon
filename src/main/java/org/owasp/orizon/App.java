@@ -1,5 +1,6 @@
 package org.owasp.orizon;
 
+import org.owasp.orizon.utils.Orizon;
 
 import java.io.IOException;
 import org.apache.bcel.classfile.*;
