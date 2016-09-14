@@ -17,7 +17,9 @@ security issues in a given code.
 
 ## Usage
 
-_To be written_
+_More a reminder than a real doc here_
+
+java -Dlog4j.configurationFile=./log4j2.xml -jar target/owasp-orizon-1.0-SNAPSHOT.jar
 
 ## The overall design
 

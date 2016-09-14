@@ -9,32 +9,32 @@
   <build>
     <resources>
       <resource>
-	<filtering>true</filtering>
-	<directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
     <plugins>
       <plugin>
-	<artifactId>maven-eclipse-plugin</artifactId>
+        <artifactId>maven-eclipse-plugin</artifactId>
       </plugin>
       <plugin>
-	<artifactId>maven-shade-plugin</artifactId>
-	<version>2.3</version>
-	<executions>
-	  <execution>
-	    <phase>package</phase>
-	    <goals>
-	      <goal>shade</goal>
-	    </goals>
-	    <configuration>
-	      <transformers>
-		<transformer>
-		  <mainClass>org.owasp.orizon.App</mainClass>
-		</transformer>
-	      </transformers>
-	    </configuration>
-	  </execution>
-	</executions>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer>
+                  <mainClass>org.owasp.orizon.App</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
