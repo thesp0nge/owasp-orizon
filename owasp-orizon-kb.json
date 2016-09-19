@@ -1,4 +1,25 @@
 {
-  "version": "20160916"
-  "url": 
+  "version": "20160916",
+  "release": "1",
+  "url": "https://raw.githubusercontent.com/thesp0nge/owasp-orizon/master/owasp-orizon-kb.json",
+
+  "rules": [
+    {
+      "id": "1",
+      "name": "The foo method is present in a class",
+      "description": "If a java class has a method called foo, unpredictable severity issues can occur.",
+      "mitigation": "Rename the method or remove it from the class",
+      "active": "true",
+      "release_date": "20160916",
+      "cvss": "10",
+      "pattern": {
+        "subject": "class",
+        "verb": "presence",
+        "what": "method",
+        "direct object": "foo"
+      }
+
+    }
+  ]
+
 }
