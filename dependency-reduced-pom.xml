@@ -4,7 +4,7 @@
   <groupId>org.owasp.orizon</groupId>
   <artifactId>owasp-orizon</artifactId>
   <name>owasp-orizon</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.30</version>
   <url>http://maven.apache.org</url>
   <build>
     <resources>

@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import org.apache.bcel.*;
+
+import org.apache.cli.*;
+
 /**
  * Hello world!
  *
@@ -24,6 +27,22 @@ public class App
 
   public static void main( String[] args )
   {
+
+    CommandLineParser parser = new DefaultParser();
+    try {
+      // parse the command line arguments
+      CommandLine line = parser.parse( org.owasp.orizon.cli.Options.create(), args );
+
+      // validate that block-size has been set
+      if( line.hasOption( "block-size" ) ) {
+        // print the value of block-size
+        System.out.println( line.getOptionValue( "block-size" ) );
+      }
+    }
+    catch( ParseException exp ) {
+      System.out.println( "Unexpected exception:" + exp.getMessage() );
+    }
+
     Orizon o=new Orizon();
     logger.info("Hello this is Owasp Orizon v " + o.getVersion());
     JarFile jarFile = null;
