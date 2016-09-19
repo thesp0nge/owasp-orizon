@@ -12,12 +12,13 @@
       "active": "true",
       "release_date": "20160916",
       "cvss": "10",
-      "pattern": {
+      "pattern": [ {
         "subject": "class",
         "verb": "presence",
         "what": "method",
         "direct object": "foo"
       }
+      ]
 
     }
   ]
