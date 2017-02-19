@@ -13,7 +13,8 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import org.apache.bcel.*;
 
-import org.apache.cli.*;
+//import org.apache.cli.*;
+import org.apache.commons.cli.*;
 
 /**
  * Hello world!
@@ -31,7 +32,7 @@ public class App
     CommandLineParser parser = new DefaultParser();
     try {
       // parse the command line arguments
-      CommandLine line = parser.parse( org.owasp.orizon.cli.Options.create(), args );
+      CommandLine line = parser.parse( org.owasp.orizon.cli.Cli.create(), args );
 
       // validate that block-size has been set
       if( line.hasOption( "block-size" ) ) {
