@@ -1,9 +1,9 @@
 package org.owasp.orizon.cli;
 
-import org.apache.cli.*;
+import org.apache.commons.cli.*;
 
-public class Cli {
-  public final static create() {
+public class Opts {
+  public final static Options create() {
     Options options = new Options();
     options.addOption("v", "version", false, "Display version information");
     options.addOption("h", "help", false, "Display help messages");

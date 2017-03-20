@@ -5,6 +5,9 @@ import org.owasp.orizon.utils.Orizon;
 import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +16,7 @@ import org.apache.bcel.classfile.*;
 import org.apache.bcel.generic.*;
 import org.apache.bcel.*;
 
-import org.apache.cli.*;
+import org.apache.commons.cli.*;
 
 /**
  * Hello world!
@@ -23,7 +26,7 @@ import org.apache.cli.*;
 public class App
 {
 
-  private static final Logger logger = LogManager.getLogger(App.class);
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
   public static void main( String[] args )
   {
@@ -31,7 +34,7 @@ public class App
     CommandLineParser parser = new DefaultParser();
     try {
       // parse the command line arguments
-      CommandLine line = parser.parse( org.owasp.orizon.cli.Options.create(), args );
+      CommandLine line = parser.parse( org.owasp.orizon.cli.Opts.create(), args );
 
       // validate that block-size has been set
       if( line.hasOption( "block-size" ) ) {
@@ -44,12 +47,16 @@ public class App
     }
 
     Orizon o=new Orizon();
-    logger.info("Hello this is Owasp Orizon v " + o.getVersion());
+    logger.info("Hello this is Owasp Orizon v" + o.getVersion());
     JarFile jarFile = null;
     try
     {
       jarFile = new JarFile(args[0]);
-      JarFinder.findReferences(args[0], jarFile);
+      // JarFinder.findReferences(args[0], jarFile);
+      List<String> jars = JarFinder.collectJars(jarFile);
+      for (String jF: jars) {
+        logger.info(jF);
+      }
     }
     catch (Exception e)
     {

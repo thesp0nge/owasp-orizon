@@ -16,14 +16,43 @@
     </license>
   </licenses>
 
+  <scm>
+    <connection>scm:git:https://github.com/thesp0nge/owasp-orizon.git</connection>
+  </scm>
+ 
   <build>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
+        <targetPath>${project.build.directory}</targetPath>
+        <includes>
+            <include>log4j2.properties</include>
+        </includes>
         <filtering>true</filtering>
       </resource>
     </resources>
+
     <plugins>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <docheck>true</docheck>
+          <doupdate>true</doupdate>
+          <shortRevisionLength>5</shortRevisionLength>
+          
+        </configuration>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -44,7 +73,10 @@
               <transformers>
                 <!-- add Main-Class to manifest file -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>org.owasp.orizon.App</mainClass>
+                  <manifestEntries>
+                    <Main-Class>org.owasp.orizon.App</Main-Class>
+                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                  </manifestEntries>
                 </transformer>
               </transformers>
             </configuration>

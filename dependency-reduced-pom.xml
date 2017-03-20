@@ -6,14 +6,46 @@
   <name>owasp-orizon</name>
   <version>1.30</version>
   <url>http://maven.apache.org</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:https://github.com/thesp0nge/owasp-orizon.git</connection>
+  </scm>
   <build>
     <resources>
       <resource>
+        <targetPath>${project.build.directory}</targetPath>
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
+        <includes>
+          <include>log4j2.properties</include>
+        </includes>
       </resource>
     </resources>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <docheck>true</docheck>
+          <doupdate>true</doupdate>
+          <shortRevisionLength>5</shortRevisionLength>
+        </configuration>
+      </plugin>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
       </plugin>
@@ -29,7 +61,10 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.owasp.orizon.App</mainClass>
+                  <manifestEntries>
+                    <Main-Class>org.owasp.orizon.App</Main-Class>
+                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                  </manifestEntries>
                 </transformer>
               </transformers>
             </configuration>

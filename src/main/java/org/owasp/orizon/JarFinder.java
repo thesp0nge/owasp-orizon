@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -26,11 +28,16 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * http://stackoverflow.com/questions/26760153/parse-jar-file-and-find-relationships-between-classes
  */
 public class JarFinder
 {
+  private static final Logger logger = LogManager.getLogger(App.class.getName());
 
     protected static void findReferences(String jarName, JarFile jarFile) 
         throws ClassFormatException, IOException, ClassNotFoundException
@@ -40,25 +47,44 @@ public class JarFinder
 
         for (JavaClass javaClass : javaClasses.values())
         {
-            System.out.println("Class "+javaClass.getClassName());
+            logger.info("Class "+javaClass.getClassName());
             Map<JavaClass, Set<Method>> references = 
                 computeReferences(javaClass, javaClasses);
             for (Entry<JavaClass, Set<Method>> entry : references.entrySet())
             {
                 JavaClass referencedJavaClass = entry.getKey();
                 Set<Method> methods = entry.getValue();
-                System.out.println(
+                logger.info(
                     "    is referencing class "+
                     referencedJavaClass.getClassName()+" by calling");
                 for (Method method : methods)
                 {
-                    System.out.println(
+                    logger.info(
                         "        "+method.getName()+" with arguments "+
                         Arrays.toString(method.getArgumentTypes()));
                 }
             }
         }
     }
+
+    public static List<String> collectJars(JarFile jarFile) 
+            throws ClassFormatException, IOException
+    {
+        List<String> jars = new ArrayList<String>();
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements())
+        {
+            JarEntry entry = entries.nextElement();
+            if (!entry.getName().endsWith(".jar"))
+            {
+                continue;
+            }
+
+            jars.add(entry.getName());
+        }
+        return jars;
+    }
+
 
     private static Map<String, JavaClass> collectJavaClasses(
         String jarName, JarFile jarFile) 
