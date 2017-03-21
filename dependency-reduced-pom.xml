@@ -4,7 +4,7 @@
   <groupId>org.owasp.orizon</groupId>
   <artifactId>owasp-orizon</artifactId>
   <name>owasp-orizon</name>
-  <version>1.30</version>
+  <version>1.99</version>
   <url>http://maven.apache.org</url>
   <licenses>
     <license>
@@ -27,6 +27,7 @@
         </includes>
       </resource>
     </resources>
+    <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -43,6 +44,10 @@
         <configuration>
           <docheck>true</docheck>
           <doupdate>true</doupdate>
+          <format>{0,number}</format>
+          <items>
+            <item>buildNumber0</item>
+          </items>
           <shortRevisionLength>5</shortRevisionLength>
         </configuration>
       </plugin>
@@ -60,6 +65,11 @@
             </goals>
             <configuration>
               <transformers>
+                <transformer />
+                <transformer>
+                  <resource>META-INF/log4j2.properties</resource>
+                  <file>src/main/resources/log4j2.properties</file>
+                </transformer>
                 <transformer>
                   <manifestEntries>
                     <Main-Class>org.owasp.orizon.App</Main-Class>

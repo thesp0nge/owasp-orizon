@@ -4,7 +4,7 @@
   <groupId>org.owasp.orizon</groupId>
   <artifactId>owasp-orizon</artifactId>
   <packaging>jar</packaging>
-  <version>1.30</version>
+  <version>1.99</version>
   <name>owasp-orizon</name>
   <url>http://maven.apache.org</url>
 
@@ -21,6 +21,7 @@
   </scm>
  
   <build>
+    <finalName>${project.artifactId}-${project.version}-b${buildNumber}</finalName>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -49,6 +50,11 @@
         <configuration>
           <docheck>true</docheck>
           <doupdate>true</doupdate>
+
+          <format>{0,number}</format>
+          <items>
+            <item>buildNumber0</item>
+          </items>
           <shortRevisionLength>5</shortRevisionLength>
           
         </configuration>
@@ -71,6 +77,13 @@
             </goals>
             <configuration>
               <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer">
+                </transformer>
+
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/log4j2.properties</resource>
+                  <file>src/main/resources/log4j2.properties</file>
+                </transformer>
                 <!-- add Main-Class to manifest file -->
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
