@@ -1,5 +1,6 @@
 package org.owasp.orizon;
 
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -28,7 +29,6 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class JarFinder
 {
-  private static final Logger logger = LogManager.getLogger(App.class.getName());
+  private static final Logger logger = LogManager.getLogger(JarFinder.class.getName());
 
     protected static void findReferences(String jarName, JarFile jarFile) 
         throws ClassFormatException, IOException, ClassNotFoundException
@@ -67,20 +67,42 @@ public class JarFinder
         }
     }
 
-    public static List<String> collectJars(JarFile jarFile) 
-            throws ClassFormatException, IOException
+    public static List<String> collectJars(JarFile jarFile, boolean extract, Path destDir) 
     {
         List<String> jars = new ArrayList<String>();
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements())
-        {
+        try {
+          Enumeration<JarEntry> entries = jarFile.entries();
+          while (entries.hasMoreElements())
+          {
             JarEntry entry = entries.nextElement();
-            if (!entry.getName().endsWith(".jar"))
+            if (entry.getName().endsWith(".jar"))
             {
-                continue;
+              if (extract) {
+                String nn = new java.io.File(entry.getName()).getName();
+                logger.debug("Extracting " + nn + " from " + jarFile.getName());
+                java.io.File f = new java.io.File(destDir + java.io.File.separator + nn);
+                if (entry.isDirectory()) { // if its a directory, create it
+                  f.mkdirs();
+                  continue;
+                }
+                java.io.InputStream is = jarFile.getInputStream(entry); // get the input stream
+                java.io.FileOutputStream fos = new java.io.FileOutputStream(f);
+                while (is.available() > 0) {  // write contents of 'is' to 'fos'
+                  fos.write(is.read());
+                }
+                fos.close();
+                is.close();
+                logger.debug(f.getName()+ " saved.");
+                jars.add(f.getName());
+              } else
+                jars.add(entry.getName());
             }
 
-            jars.add(entry.getName());
+          }
+        } catch (ClassFormatException e) {
+          logger.error(e.getMessage());
+        } catch (IOException e) {
+          logger.error(e.getMessage());
         }
         return jars;
     }

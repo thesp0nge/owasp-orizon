@@ -21,7 +21,7 @@
   </scm>
  
   <build>
-    <finalName>${project.artifactId}-${project.version}-b${buildNumber}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
     <resources>
       <resource>
         <directory>src/main/resources</directory>
@@ -88,7 +88,9 @@
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <manifestEntries>
                     <Main-Class>org.owasp.orizon.App</Main-Class>
-                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                    <Package-Version>${project.version}</Package-Version>
+                    <Specification-Version>${project.version}</Specification-Version>
+                    <Implementation-Version>${buildNumber}</Implementation-Version>
                   </manifestEntries>
                 </transformer>
               </transformers>

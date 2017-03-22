@@ -27,7 +27,7 @@
         </includes>
       </resource>
     </resources>
-    <finalName>${project.artifactId}-${project.version}-r${buildNumber}</finalName>
+    <finalName>${project.artifactId}-${project.version}</finalName>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -73,7 +73,9 @@
                 <transformer>
                   <manifestEntries>
                     <Main-Class>org.owasp.orizon.App</Main-Class>
-                    <Implementation-Build>${buildNumber}</Implementation-Build>
+                    <Package-Version>${project.version}</Package-Version>
+                    <Specification-Version>${project.version}</Specification-Version>
+                    <Implementation-Version>${buildNumber}</Implementation-Version>
                   </manifestEntries>
                 </transformer>
               </transformers>

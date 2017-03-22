@@ -2,12 +2,13 @@ package org.owasp.orizon;
 
 import org.owasp.orizon.utils.Orizon;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.io.IOException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.HashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +21,6 @@ import org.apache.commons.cli.*;
 
 /**
  * Hello world!
- *
- * java -Dlog4j.configurationFile=./log4j2.xml -jar target/owasp-orizon-1.0-SNAPSHOT.jar
  */
 public class App
 {
@@ -30,7 +29,6 @@ public class App
 
   public static void main( String[] args )
   {
-
     CommandLineParser parser = new DefaultParser();
     try {
       // parse the command line arguments
@@ -46,16 +44,20 @@ public class App
       System.out.println( "Unexpected exception:" + exp.getMessage() );
     }
 
-    Orizon o=new Orizon();
-    logger.info("Hello this is Owasp Orizon v" + o.getVersion());
+    HashMap<String, String> v = Orizon.getVersion();
+    logger.info("Hello this is Owasp Orizon v" + v.get("version") + " (build: " +v.get("build")+")");
     JarFile jarFile = null;
     try
     {
       jarFile = new JarFile(args[0]);
+      Path tempDir = Files.createTempDirectory("OwaspOrizon_");
+      tempDir.toFile().deleteOnExit();
+      logger.debug("Temp directory created: " + tempDir.getFileName());
+
       // JarFinder.findReferences(args[0], jarFile);
-      List<String> jars = JarFinder.collectJars(jarFile);
+      List<String> jars = JarFinder.collectJars(jarFile, true, tempDir);
       for (String jF: jars) {
-        logger.info(jF);
+        logger.info(jF + " version " + Orizon.getVersion(tempDir + java.io.File.separator + jF).get("version"));
       }
     }
     catch (Exception e)
